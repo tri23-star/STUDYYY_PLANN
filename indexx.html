@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BelajarJadiMudah</title>
+  <!-- Chart.js untuk grafik sederhana -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --bg: #f0f9ff;
+      --text: #1e293b;
+      --white: #ffffff;
+      --success: #10b981;
+      --card: #ffffff;
+      --dark-bg: #0f172a;
+      --dark-text: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    .screen {
+      display: none;
+      padding: 20px;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .active {
+      display: block;
+    }
+
+    /* SPLASH */
+    .splash {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      text-align: center;
+      animation: fadeIn 1s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .splash h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .splash p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    /* AUTH */
+    .auth-form {
+      max-width: 420px;
+      margin: 60px auto;
+      background: var(--card);
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .auth-form h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--primary);
+      font-size: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-light);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    .link {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    /* DASHBOARD */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .dashboard-header h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--primary);
+    }
+
+    .motivation {
+      text-align: center;
+      margin: 16px 0;
+      font-style: italic;
+      color: var(--primary);
+      font-size: 1.1rem;
+      padding: 12px;
+      background: rgba(37, 99, 235, 0.08);
+      border-radius: 12px;
+    }
+
+    .learning-tree {
+      text-align: center;
+      font-size: 8rem;
+      margin: 20px 0;
+      transition: transform 0.5s;
+    }
+
+    .timer-display {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 20px 0;
+      color: var(--primary);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .controls .btn {
+      width: auto;
+      padding: 12px 20px;
+      font-size: 15px;
+    }
+
+    .task-section, .stat-section {
+      max-width: 600px;
+      margin: 28px auto;
+      background: var(--card);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .add-task {
+      display: flex;
+      gap: 10px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .add-task input {
+      flex: 1;
+      min-width: 150px;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+    }
+
+    .add-task button {
+      padding: 10px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .task-list {
+      margin-top: 16px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 14px;
+      background: #f8fafc;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: background 0.2s;
+    }
+
+    .task-item:hover {
+      background: #edf2ff;
+    }
+
+    .task-item input[type="checkbox"] {
+      margin-right: 14px;
+      height: 22px;
+      width: 22px;
+      cursor: pointer;
+    }
+
+    .task-text {
+      flex: 1;
+      font-size: 1.05rem;
+    }
+
+    .task-duration {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .completed .task-text,
+    .completed .task-duration {
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+
+    .chart-container {
+      height: 200px;
+      margin-top: 16px;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      background: var(--white);
+      padding: 12px 0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-item i {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+
+    /* NOTIFIKASI */
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 2000;
+      font-weight: 600;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    /* FOKUS MODE OVERLAY */
+    .focus-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+      color: white;
+    }
+
+    .focus-timer {
+      font-size: 4rem;
+      margin-bottom: 30px;
+      font-weight: 700;
+    }
+
+    .focus-controls {
+      display: flex;
+      gap: 20px;
+    }
+
+    .focus-btn {
+      padding: 12px 24px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .focus-btn.stop {
+      background: #ef4444;
+    }
+
+    /* AUDIO BUTTONS */
+    .audio-select {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .audio-btn {
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .audio-btn.active {
+      background: rgba(37,99,235,0.5);
+      border-color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPLASH -->
+  <div id="splash" class="splash active">
+    <h1>Belajar Jadi Lebih Mudah</h1>
+    <p>Mulai perjalanan belajarmu hari ini!</p>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="auth" class="screen">
+    <div class="auth-form">
+      <h2>Selamat Datang!</h2>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="contoh@email.com" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+      <button class="btn" onclick="goToDashboard()">Masuk</button>
+      <button class="btn btn-outline" onclick="register()">Daftar Akun</button>
+      <a href="#" class="link" onclick="forgotPassword()">Lupa Password?</a>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="screen">
+    <div class="dashboard-header">
+      <h2>Dashboard</h2>
+      <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <div class="motivation" id="motivationQuote">
+      Kamu tidak harus sempurna, tapi konsisten. Hari ini sudah lebih baik dari kemarin!
+    </div>
+
+    <div class="learning-tree" id="learningTree">🌱</div>
+
+    <div class="timer-display" id="timer">Waktu Belajar: 0j 0m</div>
+
+    <div class="controls">
+      <button class="btn" onclick="startFocusMode()">Mode Fokus</button>
+      <button class="btn" style="background:#10b981;" onclick="startQuiz()">Kuis 15 Menit</button>
+    </div>
+
+    <div class="task-section">
+      <div class="section-title">To-Do List Belajar</div>
+      <div class="add-task">
+        <input type="text" id="newTask" placeholder="Contoh: Belajar Matematika">
+        <input type="number" id="taskDuration" placeholder="Menit" min="1" style="width:100px;">
+        <button onclick="addTask()">+</button>
+      </div>
+      <div class="task-list" id="taskList"></div>
+    </div>
+
+    <div class="stat-section">
+      <div class="section-title">Riwayat Belajar (7 Hari Terakhir)</div>
+      <div class="chart-container">
+        <canvas id="studyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFIKASI -->
+  <div id="notification" class="notification"></div>
+
+  <!-- FOKUS MODE -->
+  <div id="focusOverlay" class="focus-overlay">
+    <div class="focus-timer" id="focusTimer">15:00</div>
+    <div class="audio-select">
+      <div class="audio-btn" onclick="setAmbience('rain')">Hujan</div>
+      <div class="audio-btn" onclick="setAmbience('piano')">Piano</div>
+      <div class="audio-btn" onclick="setAmbience('none')">Hening</div>
+    </div>
+    <div class="focus-controls">
+      <button class="focus-btn" onclick="pauseResumeFocus()">Jeda</button>
+      <button class="focus-btn stop" onclick="endFocusMode()">Selesai</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <a href="#" class="nav-item active" onclick="showScreen('dashboard')">
+      <div>🏠</div>
+      <div>Beranda</div>
+    </a>
+    <a href="#" class="nav-item" onclick="showScreen('auth')">
+      <div>👤</div>
+      <div>Akun</div>
+    </a>
+    <a href="#" class="nav-item" onclick="startQuiz()">
+      <div>❓</div>
+      <div>Kuis</div>
+    </a>
+    <a href="#" class="nav-item" onclick="startFocusMode()">
+      <div>🎯</div>
+      <div>Fokus</div>
+    </a>
+  </div>
+
+  <script>
+    // === STATE ===
+    let studyTime = 0;
+    let timerInterval = null;
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let focusActive = false;
+    let focusMinutes = 15;
+    let focusSeconds = 0;
+    let focusInterval = null;
+    let ambienceAudio = null;
+    let treeStage = parseInt(localStorage.getItem('treeStage')) || 0;
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+
+    const quotes = [
+      "Kamu tidak harus sempurna, tapi konsisten. Hari ini sudah lebih baik dari kemarin!",
+      "Setiap halaman yang kamu baca adalah langkah menuju versi terbaikmu!",
+      "Belajar hari ini = hadiah untuk dirimu besok!",
+      "Otakmu seperti otot — semakin dilatih, semakin kuat!",
+      "Jangan menyerah! Kamu sedang tumbuh sekarang."
+    ];
+
+    const treeEmojis = ['🌱', '🌿', '🌳', '🌲', '🌴', '🪵'];
+
+    // === INIT ===
+    window.addEventListener('load', () => {
+      if (darkMode) {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.theme-toggle').textContent = '☀️';
+      }
+      updateTree();
+      initChart();
+      updateMotivation();
+    });
+
+    setTimeout(() => {
+      document.getElementById('splash').classList.remove('active');
+      document.getElementById('auth').classList.add('active');
+    }, 2500);
+
+    // === NAVIGASI ===
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function goToDashboard() {
+      showScreen('dashboard');
+      loadTasks();
+    }
+
+    function register() {
+      alert("Akun berhasil dibuat! (Simulasi)\nSekarang kamu bisa belajar tanpa batas.");
+      goToDashboard();
+    }
+
+    function forgotPassword() {
+      alert("Link reset password telah dikirim ke email Anda.");
+    }
+
+    // === TO-DO LIST ===
+    function addTask() {
+      const text = document.getElementById('newTask').value.trim();
+      const dur = document.getElementById('taskDuration').value;
+      if (!text) return alert("Masukkan aktivitas belajar!");
+      const durationText = dur ? `${dur} menit` : "tanpa durasi";
+      tasks.push({ text, duration: durationText, completed: false });
+      saveTasks();
+      loadTasks();
+      document.getElementById('newTask').value = '';
+      document.getElementById('taskDuration').value = '';
+    }
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      if (tasks[index].completed) {
+        treeStage++;
+        localStorage.setItem('treeStage', treeStage);
+        updateTree();
+        // Simulasi notifikasi motivasi setiap 3 tugas selesai
+        if (treeStage % 3 === 0) {
+          showNotification("🌟 Hebat! Kamu telah menyelesaikan beberapa tugas. Teruskan semangat ini!");
+        }
+      }
+      saveTasks();
+      loadTasks();
+    }
+
+    function loadTasks() {
+      const list = document.getElementById('taskList');
+      list.innerHTML = '';
+      tasks.forEach((task, i) => {
+        const div = document.createElement('div');
+        div.className = task.completed ? 'task-item completed' : 'task-item';
+        div.innerHTML = `
+          <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${i})">
+          <div class="task-text">${task.text}</div>
+          <div class="task-duration">${task.duration}</div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function saveTasks() {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    // === TIMER & NOTIFIKASI ===
+    function startSession() {
+      if (timerInterval) return;
+      const startTime = Date.now();
+      timerInterval = setInterval(() => {
+        studyTime = Math.floor((Date.now() - startTime) / 1000);
+        const hours = Math.floor(studyTime / 3600);
+        const minutes = Math.floor((studyTime % 3600) / 60);
+        document.getElementById('timer').textContent = `Waktu Belajar: ${hours}j ${minutes}m`;
+
+        if (studyTime === 10800) { // 3 jam
+          showNotification("🎉 Selamat! Kamu sudah belajar selama 3 jam hari ini. Besok harus ada lagi kemajuan—semangat belajarnyaa!");
+          treeStage += 2;
+          localStorage.setItem('treeStage', treeStage);
+          updateTree();
+        }
+      }, 1000);
+    }
+
+    function showNotification(msg) {
+      const el = document.getElementById('notification');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    // === POHON BELAJAR ===
+    function updateTree() {
+      const stage = Math.min(treeStage, treeEmojis.length - 1);
+      document.getElementById('learningTree').textContent = treeEmojis[stage];
+    }
+
+    // === MODE FOKUS ===
+    function startFocusMode() {
+      focusActive = true;
+      focusMinutes = 15;
+      focusSeconds = 0;
+      updateFocusTimer();
+      document.getElementById('focusOverlay').style.display = 'flex';
+      setAmbience('rain');
+    }
+
+    function updateFocusTimer() {
+      document.getElementById('focusTimer').textContent = 
+        `${String(focusMinutes).padStart(2, '0')}:${String(focusSeconds).padStart(2, '0')}`;
+    }
+
+    function pauseResumeFocus() {
+      if (focusInterval) {
+        clearInterval(focusInterval);
+        focusInterval = null;
+        document.querySelector('.focus-btn').textContent = 'Lanjut';
+      } else {
+        focusInterval = setInterval(() => {
+          if (focusSeconds === 0) {
+            if (focusMinutes === 0) {
+              endFocusMode();
+              return;
+            }
+            focusMinutes--;
+            focusSeconds = 59;
+          } else {
+            focusSeconds--;
+          }
+          updateFocusTimer();
+        }, 1000);
+        document.querySelector('.focus-btn').textContent = 'Jeda';
+      }
+    }
+
+    function endFocusMode() {
+      clearInterval(focusInterval);
+      focusInterval = null;
+      document.getElementById('focusOverlay').style.display = 'none';
+      if (ambienceAudio) {
+        ambienceAudio.pause();
+        ambienceAudio = null;
+      }
+      showNotification("🎯 Sesi fokus selesai! Kamu luar biasa fokus hari ini.");
+    }
+
+    function setAmbience(type) {
+      if (ambienceAudio) {
+        ambienceAudio.pause();
+      }
+      document.querySelectorAll('.audio-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Di versi nyata, ganti dengan audio URL
+      // Contoh: https://github.com/anars/blank-audio
+      if (type === 'rain') {
+        // ambienceAudio = new Audio('rain.mp3');
+        // ambienceAudio.loop = true;
+        // ambienceAudio.play();
+      }
+    }
+
+    // === KUIS ===
+    function startQuiz() {
+      alert("📚 Kuis 15 Menit Dimulai!\n\n5 soal pilihan ganda akan muncul. Jawab secepat & seakurat mungkin!\n\n(Simulasi: di versi lengkap, ini adalah halaman interaktif dengan timer.)");
+    }
+
+    // === GRAFIK ===
+    let studyChart = null;
+    function initChart() {
+      const ctx = document.getElementById('studyChart').getContext('2d');
+      const data = {
+        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+        datasets: [{
+          label: 'Waktu Belajar (menit)',
+          data: [45, 60, 30, 75, 90, 20, 0], // contoh data
+          backgroundColor: 'rgba(37, 99, 235, 0.5)',
+          borderColor: '#2563eb',
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
+        }]
+      };
+      studyChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: darkMode ? '#cbd5e1' : '#64748b' } },
+            x: { ticks: { color: darkMode ? '#cbd5e1' : '#64748b' } }
+          }
+        }
+      });
+    }
+
+    // === TEMA ===
+    function toggleTheme() {
+      darkMode = !darkMode;
+      localStorage.setItem('darkMode', darkMode);
+      if (darkMode) {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.theme-toggle').textContent = '☀️';
+      } else {
+        document.body.classList.remove('dark-mode');
+        document.querySelector('.theme-toggle').textContent = '🌙';
+      }
+      if (studyChart) studyChart.destroy();
+      initChart();
+    }
+
+    // === LAINNYA ===
+    function updateMotivation() {
+      document.getElementById('motivationQuote').textContent = 
+        quotes[Math.floor(Math.random() * quotes.length)];
+    }
+  </script>
+</body>
+</html>
